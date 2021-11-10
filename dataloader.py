@@ -1,6 +1,7 @@
 from torchvision import datasets, models, transforms
 import torch
 import torch.utils.data as data
+import os
 
 data_transforms = {
     'train': transforms.Compose([
@@ -31,7 +32,7 @@ image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val', 'test']}
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=16,
-                                             shuffle=True, num_workers=8, drop_last=True)
+                                             shuffle=True, num_workers=0, drop_last=True)
               for x in ['train', 'val', 'test']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val', 'test']}
 class_names = image_datasets['train'].classes

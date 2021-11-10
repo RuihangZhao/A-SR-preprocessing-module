@@ -1,6 +1,13 @@
 from utils.utils import *
 from net import *
 from dataloader import *
+from arguments import *
+
+import random
+import torch.backends.cudnn as cudnn
+import torch.optim as optim
+from torch.autograd import Variable
+import torchvision
 import numpy as np
 
 import os
@@ -37,10 +44,11 @@ def main():
     CNET = SDCNN()
     criterion = nn.CrossEntropyLoss()
 
-    print("===> Setting GPU")
-    SRmodel = SRmodel.cuda()
-    criterion = criterion.cuda()
-    CNET = CNET.cuda()
+    if torch.cuda.is_available():
+        print("===> Setting GPU")
+        SRmodel = SRmodel.cuda()
+        criterion = criterion.cuda()
+        CNET = CNET.cuda()
 
     # optionally resume from a checkpoint
     if opt.resume:
@@ -107,8 +115,10 @@ def train(training_data_loader, optimizer_SR, optimizer_TL, SRmodel, CNET, crite
     for iteration, batch in enumerate(training_data_loader['train'], 1):
 
         images, labels = Variable(batch[0]), Variable(batch[1], requires_grad=False)
-        images = images.cuda()
-        labels = labels.cuda()
+
+        if torch.cuda.is_available():
+            images = images.cuda()
+            labels = labels.cuda()
 
         if opt.SR_used:
             out_images = SRmodel(images)
@@ -143,8 +153,9 @@ def train(training_data_loader, optimizer_SR, optimizer_TL, SRmodel, CNET, crite
 
     if opt.SR_used:
         # Get a batch of training data
-        out_images, classes = out_images.cpu(), labels.cpu()
-        inputs = images.cpu()
+        if not torch.cuda.is_available():
+            out_images, classes = out_images.cpu(), labels.cpu()
+            inputs = images.cpu()
 
         # Make a grid from batch
         out_images = torchvision.utils.make_grid(out_images)

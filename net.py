@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
+from math import sqrt
 
 class FSRCNN(nn.Module):
     def __init__(self, num_channels=3, upscale_factor=8, d=64, s=12, m=4):
-        super(Net, self).__init__()
+        super(FSRCNN, self).__init__()
 
         self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2),
                                         nn.PReLU())
@@ -40,9 +41,18 @@ class FSRCNN(nn.Module):
                     m.bias.data.zero_()
 
 
+class Conv_ReLU_Block(nn.Module):
+    def __init__(self):
+        super(Conv_ReLU_Block, self).__init__()
+        self.conv = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        return self.relu(self.conv(x))
+
 class VDSR(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
+        super(VDSR, self).__init__()
         self.residual_layer = self.make_layer(Conv_ReLU_Block, 18)
         self.input = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=3, stride=1, padding=1, bias=False)
         self.output = nn.Conv2d(in_channels=128, out_channels=3, kernel_size=3, stride=1, padding=1, bias=False)
