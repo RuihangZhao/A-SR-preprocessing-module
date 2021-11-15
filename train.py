@@ -88,13 +88,13 @@ def main():
     for epoch in range(opt.start_epoch, opt.nEpochs + 1):
         train(dataloaders, optimizer_SR, optimizer_TL, SRmodel, CNET, criterion, epoch)
         if opt.SR_used:
-            save_SR_checkpoint(SRmodel, epoch)
+            save_SR_checkpoint(SRmodel, epoch, opt)
         if opt.TLtrain:
-            save_TL_checkpoint(CNET, epoch)
+            save_TL_checkpoint(CNET, epoch, opt)
 
 
-def train(training_data_loader, optimizer_SR, optimizer_TL, SRmodel, CNET, criterion, epoch):
-    lr = adjust_learning_rate(optimizer_SR, optimizer_TL, epoch - 1)
+def train(training_data_loader, optimizer_SR, optimizer_TL, SRmodel, CNET, criterion, epoch, opt):
+    lr = adjust_learning_rate(optimizer_SR, optimizer_TL, epoch - 1, opt)
 
     for param_group in optimizer_SR.param_groups:
         param_group["lr"] = lr

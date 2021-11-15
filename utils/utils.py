@@ -20,7 +20,7 @@ def imshow(inp, title=None):
     plt.pause(0.001)  # pause a bit so that plots are updated
 
 
-def save_SR_checkpoint(SRmodel, epoch):
+def save_SR_checkpoint(SRmodel, epoch, opt):
     model_out_path = "./checkpoint/" + "model_FSRCNN_CNET_*8_epoch_{}.pth".format(
         epoch + opt.pretrained_SR_num)
     state = {"epoch": epoch, "model": SRmodel}
@@ -32,7 +32,7 @@ def save_SR_checkpoint(SRmodel, epoch):
     print("Super resolution network checkpoint saved to {}".format(model_out_path))
 
 
-def save_TL_checkpoint(model, epoch):
+def save_TL_checkpoint(model, epoch, opt):
     model_out_path = "./checkpoint/TransferLearning/" + "model_FSRCNN_CNET_*8_epoch_{}.pth".format(
         epoch + opt.pretrained_TL_num)
     state = {"epoch": epoch, "model": model}
@@ -44,7 +44,7 @@ def save_TL_checkpoint(model, epoch):
     print("Transfer learning checkpoint saved to {}".format(model_out_path))
 
 
-def adjust_learning_rate(optimizer_SR, optimizer_TL, epoch):
+def adjust_learning_rate(optimizer_SR, optimizer_TL, epoch, opt):
     """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
     lr = opt.lr * (0.1 ** (epoch // opt.step))
     return lr
